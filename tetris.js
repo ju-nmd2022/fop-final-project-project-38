@@ -3,8 +3,8 @@ window.onload = function() {
 };
 
 //grid
-const ROWS = 20;
-const COLS = 10;
+const ROWS = 30;
+const COLS = 15;
 const BLOCK_SIZE = 20;
 
 function setup() {
