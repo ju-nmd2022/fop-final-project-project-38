@@ -1,5 +1,5 @@
-let level = 1
-let score = 0
+let level = 1;
+let score = 0;
 //grid
 const ROWS = 30;
 const COLS = 15;
