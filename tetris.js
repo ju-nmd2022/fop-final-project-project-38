@@ -26,5 +26,6 @@ function draw() {
 ctx.fillStyle = 'black';
 textAlign(RIGHT, TOP);
 ctx.font = '24px Arial';
+ctx.strokeRect(300, 107, 161, 24);
 ctx.fillText("SCORE", 300, 200);
 displayTetramino(nextTetramino, COLS + 2, 10);
