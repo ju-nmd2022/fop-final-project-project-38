@@ -1,7 +1,9 @@
+let level = 1
+let score = 0
 //grid
 const ROWS = 30;
 const COLS = 15;
-const BLOCK_SIZE = 20;
+const BLOCK_SIZE = 30;
 
 function setup() {
     const canvas = createCanvas(COLS * BLOCK_SIZE, ROWS * BLOCK_SIZE);
@@ -21,10 +23,8 @@ function draw() {
 }
 
 // Display score
-fill(0);
+ctx.fillStyle = 'black';
 textAlign(RIGHT, TOP);
-textSize(24);
-text(`Score: ${score}`, width - 180, 40);
-text(`Level: ${level}`, width - 180, 80);
-text('Next Tetramino:', width - 180, 120);
+ctx.font = '24px Arial';
+ctx.fillText("SCORE", 300, 200);
 displayTetramino(nextTetramino, COLS + 2, 10);
