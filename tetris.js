@@ -23,11 +23,3 @@ function draw() {
     }
 }
 
-// Display score
-const ctx = canvas.getContext('2d');
-ctx.fillStyle = 'black';
-textAlign(RIGHT, TOP);
-ctx.font = '24px Arial';
-ctx.strokeRect(300, 107, 161, 24);
-ctx.fillText("SCORE", 300, 200);
-displayTetromino(nextTetramino, COLS + 2, 10);
