@@ -8,6 +8,7 @@ const BLOCK_SIZE = 30;
 function setup() {
     const canvas = createCanvas(COLS * BLOCK_SIZE, ROWS * BLOCK_SIZE);
     canvas.parent('canvas-container');
+    const ctx = canvas.getContext('2d');
 }
 
 function draw() {
