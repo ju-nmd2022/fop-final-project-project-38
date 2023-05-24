@@ -2,6 +2,7 @@ import Tetromino from "./tetromino";
 
 let level = 1;
 let score = 0;
+let tetrominoes = [];
 //grid
 const ROWS = 30;
 const COLS = 15;
