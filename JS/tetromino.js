@@ -1,4 +1,4 @@
-class Tetromino {
+export default class Tetromino {
     constructor(shape, color) {
       this.shape = shape;
       this.color = color;
