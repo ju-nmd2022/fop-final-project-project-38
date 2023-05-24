@@ -20,6 +20,8 @@ function setup() {
   const canvas = createCanvas(COLS * BLOCK_SIZE, ROWS * BLOCK_SIZE);
   canvas.parent('canvas-container');
 
+  backgroundImage.resize(COLS * BLOCK_SIZE, ROWS * BLOCK_SIZE);
+
   currentTetromino = new Tetromino();
 }
 
