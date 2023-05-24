@@ -21,6 +21,7 @@ function setup() {
   canvas.parent('canvas-container');
 
   backgroundImage.resize(COLS * BLOCK_SIZE, ROWS * BLOCK_SIZE);
+  imageMode(CENTER);
 
   currentTetromino = new Tetromino();
 }
