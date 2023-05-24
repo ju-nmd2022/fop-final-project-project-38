@@ -1,7 +1,6 @@
 export default class Tetromino {
-    constructor(shape, color) {
+    constructor(shape) {
       this.shape = shape;
-      this.color = color;
       this.sprite = createSprite();
       this.sprite.addAnimation('default', shape);
       this.sprite.scale = BLOCK_SIZE / max(shape.width, shape.height);
