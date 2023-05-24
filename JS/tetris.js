@@ -1,4 +1,4 @@
-import Tetromino from "./JS/tetromino";
+import Tetromino from "./tetromino";
 
 let level = 1;
 let score = 0;
