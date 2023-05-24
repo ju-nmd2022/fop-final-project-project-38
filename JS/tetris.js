@@ -23,7 +23,8 @@ function setup() {
   backgroundImage.resize(COLS * BLOCK_SIZE, ROWS * BLOCK_SIZE);
   imageMode(CENTER);
 
-  currentTetromino = new Tetromino();
+  currentTetromino = new Tetromino("../Tetrominoes.svg");
+  currentTetromino.setPosition(width / 2, height / 2);
 }
 
 function draw() {
