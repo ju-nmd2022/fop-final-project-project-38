@@ -15,7 +15,7 @@ function setup() {
 }
 
 function draw() {
-    background('../Level1.jpg');
+    background("../Level1.jpg");
     stroke(0);
     strokeWeight(1);
     for (let i = 0; i <= COLS; i++) {
