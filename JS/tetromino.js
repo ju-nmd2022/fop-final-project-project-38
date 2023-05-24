@@ -1,4 +1,4 @@
-class Tetramino {
+class Tetromino {
     constructor(shape, color) {
       this.shape = shape;
       this.color = color;
