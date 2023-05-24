@@ -1,3 +1,5 @@
+import Tetromino from "./JS/tetromino";
+
 let level = 1;
 let score = 0;
 //grid
