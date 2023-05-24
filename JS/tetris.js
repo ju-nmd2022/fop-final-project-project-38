@@ -20,7 +20,8 @@ function setup() {
 }
 
 function draw() {
-    background(backgroundImage);
+    background(0);
+    image(backgroundImage, 0, 0);
     stroke(0);
     strokeWeight(1);
     for (let i = 0; i <= COLS; i++) {
