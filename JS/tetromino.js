@@ -46,29 +46,31 @@ class Tetromino {
   rotate() {
     const rotatedShape = [];
     const piece = this.shape;
-
+  
     for (let i = 0; i < piece.length; i++) {
       rotatedShape.push([]);
       for (let j = 0; j < piece[i].length; j++) {
         rotatedShape[i].push(0);
       }
     }
-
+  
     for (let i = 0; i < piece.length; i++) {
       for (let j = 0; j < piece[i].length; j++) {
         rotatedShape[i][j] = piece[j][i];
       }
     }
-
+  
     for (let i = 0; i < rotatedShape.length; i++) {
       rotatedShape[i] = rotatedShape[i].reverse();
     }
-
+  
     if (this.canMove(this.col, this.row, rotatedShape)) {
       this.shape = rotatedShape;
+      
+      update();
     }
-    renderGame();
   }
+  
   
 
   getRandomShape() {
