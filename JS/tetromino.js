@@ -30,8 +30,7 @@ class Tetromino {
           if (this.image) {
             image(this.image, x, y, BLOCK_SIZE, BLOCK_SIZE);
           } else {
-            const color = this.getRandomColor();
-            fill(color);
+            fill('red');
             rect(x, y, BLOCK_SIZE, BLOCK_SIZE);
           }
         }
@@ -81,8 +80,10 @@ class Tetromino {
   }
 
   getImageForShape(shape) {
-    const shapeKey = JSON.stringify(shape);
-    return shapeImages[shapeKey];
+    getImageForShape(shape) {
+      const shapeKey = JSON.stringify(shape);
+      return shapeImages[shapeKey] || null;
+    }
   }
 
   canMoveDown() {
