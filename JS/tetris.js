@@ -1,9 +1,12 @@
+import { Tetromino } from './tetromino.js';
+
 const ROWS = 30;
 const COLS = 15;
 const BLOCK_SIZE = 30;
 let tetrominoes = [];
 let backgroundImage;
 let canvasContext;
+const tetromino = new Tetromino();
 
 function preload() {
     backgroundImage = loadImage("../IMG/Level1.jpg");
@@ -30,4 +33,36 @@ function draw() {
         canvasContext.lineTo(width, i * BLOCK_SIZE);
     }
     canvasContext.stroke();
+
+    tetromino.show();
+    tetromino.update();
 }
+
+function keyPressed() {
+    if (keyCode === LEFT_ARROW) {
+        tetromino.moveLeft();
+    } else if (keyCode === RIGHT_ARROW) {
+        tetromino.moveRight();
+    } else if (keyCode === DOWN_ARROW) {
+        tetromino.moveDown();
+    } else if (keyCode === UP_ARROW) {
+        tetromino.rotate();
+    }
+}
+
+function updateGame() {
+   
+}
+
+// Initialize the game
+function initGame() {
+    
+}
+
+function startGame() {
+    initGame();
+    setup();
+    setInterval(updateGame, 1000);
+}
+
+startGame();

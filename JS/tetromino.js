@@ -1,42 +1,64 @@
 export default class Tetromino {
-  constructor(shapeFile) {
-    this.shapeFile = shapeFile;
-    this.sprite = createSprite();
-    this.sprite.addAnimation('default', this.loadShape(shapeFile));
-    this.x = 0;
-    this.y = 0;
-    this.speed = 1; // Speed at which the tetromino moves
+  constructor() {
+      this.row = 0; // Initial row position
+      this.col = Math.floor(COLS / 2); // Initial column position
+      this.color = this.getRandomColor(); 
+      this.shape = this.getRandomShape();
   }
-  
-  loadShape(shapeFile) {
-    const shapeImage = loadImage(`../${Te}`);
-    return shapeImage;
+
+  show() {
+      for (let row = 0; row < this.shape.length; row++) {
+          for (let col = 0; col < this.shape[row].length; col++) {
+              if (this.shape[row][col] === 1) {
+                  fill(this.color);
+                  rect(
+                      (this.col + col) * BLOCK_SIZE,
+                      (this.row + row) * BLOCK_SIZE,
+                      BLOCK_SIZE,
+                      BLOCK_SIZE
+                  );
+              }
+          }
+      }
   }
-  
-  setPosition(x, y) {
-    this.sprite.position.x = x;
-    this.sprite.position.y = y;
-    this.x = x;
-    this.y = y;
-  }
-  
+
   update() {
-    // Move the tetromino horizontally
-    this.x += this.speed;
-    this.sprite.position.x = this.x;
-    
-    // Collision detection
-    if (this.x > width) {
-      this.x = -this.sprite.width; 
-      this.sprite.position.x = this.x;
-    }
   }
-  
-  draw() {
-    drawSprites();
+
+  moveDown() {
+      this.row++;
   }
-  
-  isStopped() {
-    return false;
+
+  moveLeft() {
+      this.col--;
+  }
+
+  moveRight() {
+      this.col++;
+  }
+
+  rotate() {
+      const rotatedShape = [];
+      for (let col = 0; col < this.shape[0].length; col++) {
+          const newRow = [];
+          for (let row = this.shape.length - 1; row >= 0; row--) {
+              newRow.push(this.shape[row][col]);
+          }
+          rotatedShape.push(newRow);
+      }
+      this.shape = rotatedShape;
+  }
+
+  getRandomShape() {
+      const shapes = [
+          [[1, 1, 1, 1]], 
+          [[1, 1], [1, 1]], 
+          [[1, 1, 1], [0, 1, 0]],
+      ];
+      return random(shapes);
+  }
+
+  getRandomColor() {
+      return color(random(255), random(255), random(255)); // Generate a random color
   }
 }
