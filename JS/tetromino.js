@@ -27,6 +27,7 @@ class Tetromino {
 
   moveDown() {
     this.row++;
+    //convert this to if statement to check for collision and so on with the other moves
   }
 
   moveLeft() {
