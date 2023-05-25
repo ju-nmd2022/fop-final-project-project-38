@@ -1,244 +1,404 @@
-const ROWS = 30;
-const COLS = 15;
-const BLOCK_SIZE = 30;
-let backgroundImage;
-let gameModel;
-let score = 0;
-let level = 1;
-let scoreboard;
-let frameCounter = 0;
-const frameRateInterval = 30;
-const tetrominoes = [
-  [[1, 1, 1, 1]],
-  [[1, 0, 0], [1, 1, 1]],
-  [[0, 0, 1], [1, 1, 1]],
-  [[1, 1], [1, 1]],
-  [[0, 1, 1], [1, 1, 0]],
-  [[0, 1, 0], [1, 1, 1]],
-  [[1, 1, 0], [0, 1, 1]]
-];
+let canvas;
+let ctx;
+let gBArrayHeight = 20; 
+let gBArrayWidth = 12; 
+let startX = 4; 
+let startY = 0; 
+let score = 0; 
+let level = 1; 
+let winOrLose = "Playing";
+let coordinateArray = [...Array(gBArrayHeight)].map(e => Array(gBArrayWidth).fill(0));
+let curTetromino = [[1,0], [0,1], [1,1], [2,1]];
+let tetrominos = [];
+let tetrominoColors = ['purple','cyan','blue','yellow','orange','green','red'];
+let curTetrominoColor;
+let gameBoardArray = [...Array(20)].map(e => Array(12).fill(0));
+let stoppedShapeArray = [...Array(20)].map(e => Array(12).fill(0));
+let DIRECTION = {
+    IDLE: 0,
+    DOWN: 1,
+    LEFT: 2,
+    RIGHT: 3
+};
+let direction;
 
-const COLORS = [
-  "#000000",
-  "#FF0000",
-  "#00FF00",
-  "#0000FF",
-  "#FFFF00",
-  "#00FFFF",
-  "#10FF01",
-  "#F000FF"
-];
-
-function preload() {
-  backgroundImage = loadImage("../IMG/Level1.jpg");
-}
-
-function setup() {
-  const canvas = createCanvas(COLS * BLOCK_SIZE, ROWS * BLOCK_SIZE);
-  canvas.parent("canvas-container");
-  gameModel = new GameModel();
-  scoreboard = document.getElementById("scoreboard");
-}
-
-function draw() {
-  background(backgroundImage);
-  gameModel.renderGameState();
-}
-
-function keyPressed() {
-  if (keyCode === LEFT_ARROW) {
-    gameModel.moveLeft();
-  } else if (keyCode === RIGHT_ARROW) {
-    gameModel.moveRight();
-  } else if (keyCode === DOWN_ARROW) {
-    gameModel.moveDown();
-  } else if (keyCode === UP_ARROW) {
-    gameModel.rotate();
-  }
-}
-
-class GameModel {
-  constructor() {
-    this.fallingPiece = this.spawnTetromino();
-    this.grid = this.makeStartingGrid();
-  }
-
-  makeStartingGrid() {
-    let grid = [];
-    for (let i = 0; i < ROWS; i++) {
-      grid.push(new Array(COLS).fill(0));
+class Coordinates{
+    constructor(x, y){
+        this.x = x;
+        this.y = y;
     }
-    return grid;
-  }
+}
 
-  collision(x, y, candidate = null) {
-    const shape = candidate || this.fallingPiece.shape;
-    const n = shape.length;
-    for (let i = 0; i < n; i++) {
-      for (let j = 0; j < n; j++) {
-        if (shape[i][j] > 0) {
-          let p = x + j;
-          let q = y + i;
-          if (p >= 0 && p < COLS && q < ROWS) {
-            // in bounds
-            if (this.grid[q][p] > 0) {
-              return true;
-            }
-          } else {
-            return true;
-          }
+document.addEventListener('DOMContentLoaded', SetupCanvas); 
+
+
+function CreateCoordArray(){
+    let xR = 0, yR = 19;
+    let i = 0, j = 0;
+    for(let y = 9; y <= 446; y += 23){
+        // 12 * 23 = 276 - 12 = 264 Max X value
+        for(let x = 11; x <= 264; x += 23){
+            coordinateArray[i][j] = new Coordinates(x,y);
+            i++;
         }
+        j++;
+        i = 0;
+    }
+}
+
+function SetupCanvas(){
+    canvas = document.getElementById('my-canvas');
+    ctx = canvas.getContext('2d');
+    canvas.width = 936;
+    canvas.height = 956;
+
+    ctx.scale(2, 2);
+    
+    ctx.strokeStyle = 'black';
+    ctx.strokeRect(8, 8, 280, 462);
+
+    tetrisLogo = new Image(161, 54);
+    tetrisLogo.onload = DrawTetrisLogo;
+    tetrisLogo.src = "tetrislogo.png";
+
+    ctx.fillStyle = 'black';
+    ctx.font = '21px Arial';
+    ctx.fillText("SCORE", 300, 98);
+
+
+    ctx.strokeRect(300, 107, 161, 24);
+
+    ctx.fillText(score.toString(), 310, 127);
+    
+    ctx.fillText("LEVEL", 300, 157);
+
+    ctx.strokeRect(300, 171, 161, 24);
+
+    ctx.fillText(level.toString(), 310, 190);
+
+    ctx.fillText("WIN / LOSE", 300, 221);
+
+    ctx.fillText(winOrLose, 310, 261);
+
+    ctx.strokeRect(300, 232, 161, 95);
+    
+    document.addEventListener('keydown', HandleKeyPress);
+
+    CreateTetrominos();
+    CreateTetromino();
+
+    CreateCoordArray();
+
+    DrawTetromino();
+}
+
+function DrawTetrisLogo(){
+    ctx.drawImage(tetrisLogo, 300, 8, 161, 54);
+}
+
+function DrawTetromino(){
+    
+    for(let i = 0; i < curTetromino.length; i++){
+
+        let x = curTetromino[i][0] + startX;
+        let y = curTetromino[i][1] + startY;
+
+        gameBoardArray[x][y] = 1;
+       
+        let coorX = coordinateArray[x][y].x;
+        let coorY = coordinateArray[x][y].y;
+
+        ctx.fillStyle = curTetrominoColor;
+        ctx.fillRect(coorX, coorY, 21, 21);
+    }
+}
+
+function HandleKeyPress(key) {
+    if (winOrLose != "Game Over") {
+      if (key.code === "ArrowLeft") {
+        direction = DIRECTION.LEFT;
+        if (!HittingTheWall() && !CheckForHorizontalCollision()) {
+          DeleteTetromino();
+          startX--;
+          DrawTetromino();
+        }
+      } else if (key.code === "ArrowRight") {
+        direction = DIRECTION.RIGHT;
+        if (!HittingTheWall() && !CheckForHorizontalCollision()) {
+          DeleteTetromino();
+          startX++;
+          DrawTetromino();
+        }
+      } else if (key.code === "ArrowDown") {
+        MoveTetrominoDown();
+      } else if (key.code === "ArrowUp") {
+        RotateTetromino();
       }
+    }
+  }
+  
+
+function MoveTetrominoDown(){
+    direction = DIRECTION.DOWN;
+
+    if(!CheckForVerticalCollison()){
+        DeleteTetromino();
+        startY++;
+        DrawTetromino();
+    }
+}
+
+
+window.setInterval(function(){
+    if(winOrLose != "Game Over"){
+        MoveTetrominoDown();
+    }
+  }, 1000);
+
+
+
+function DeleteTetromino(){
+    for(let i = 0; i < curTetromino.length; i++){
+        let x = curTetromino[i][0] + startX;
+        let y = curTetromino[i][1] + startY;
+
+        gameBoardArray[x][y] = 0;
+
+        let coorX = coordinateArray[x][y].x;
+        let coorY = coordinateArray[x][y].y;
+        ctx.fillStyle = 'white';
+        ctx.fillRect(coorX, coorY, 21, 21);
+    }
+}
+
+
+function CreateTetrominos(){
+    tetrominos.push([[1,0], [0,1], [1,1], [2,1]]);
+    tetrominos.push([[0,0], [1,0], [2,0], [3,0]]);
+    tetrominos.push([[0,0], [0,1], [1,1], [2,1]]);
+    tetrominos.push([[0,0], [1,0], [0,1], [1,1]]);
+    tetrominos.push([[2,0], [0,1], [1,1], [2,1]]);
+    tetrominos.push([[1,0], [2,0], [0,1], [1,1]]);
+
+    tetrominos.push([[0,0], [1,0], [1,1], [2,1]]);
+}
+
+function CreateTetromino(){
+    let randomTetromino = Math.floor(Math.random() * tetrominos.length);
+    curTetromino = tetrominos[randomTetromino];
+    curTetrominoColor = tetrominoColors[randomTetromino];
+}
+
+
+function HittingTheWall(){
+    for(let i = 0; i < curTetromino.length; i++){
+        let newX = curTetromino[i][0] + startX;
+        if(newX <= 0 && direction === DIRECTION.LEFT){
+            return true;
+        } else if(newX >= 11 && direction === DIRECTION.RIGHT){
+            return true;
+        }  
     }
     return false;
-  }
+}
 
-  renderGameState() {
-    stroke(0);
-    strokeWeight(1);
-    for (let i = 0; i <= COLS; i++) {
-      line(i * BLOCK_SIZE, 0, i * BLOCK_SIZE, height);
-    }
-    for (let i = 0; i <= ROWS; i++) {
-      line(0, i * BLOCK_SIZE, width, i * BLOCK_SIZE);
-    }
+function CheckForVerticalCollison(){
 
-    for (let i = 0; i < this.grid.length; i++) {
-        for (let j = 0; j < this.grid[i].length; j++) {
-          const cell = this.grid[i][j];
-          if (cell !== 0) {
-            const colorIndex = cell - 1; 
-            fill(COLORS[colorIndex]);
-            rect(j * BLOCK_SIZE, i * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
-          }
+    let tetrominoCopy = curTetromino;
+    let collision = false;
+
+    for(let i = 0; i < tetrominoCopy.length; i++){
+        let square = tetrominoCopy[i];
+        let x = square[0] + startX;
+        let y = square[1] + startY;
+
+        if(direction === DIRECTION.DOWN){
+            y++;
         }
-      }
-      
-      const { x, y, shape } = this.fallingPiece;
-      for (let i = 0; i < shape.length; i++) {
-        for (let j = 0; j < shape[i].length; j++) {
-          if (shape[i][j] > 0) {
-            const colorIndex = shape[i][j] - 1; 
-            fill(COLORS[colorIndex]); 
-            rect((x + j) * BLOCK_SIZE, (y + i) * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
-          }
+
+        if(typeof stoppedShapeArray[x][y+1] === 'string'){
+            DeleteTetromino();
+            startY++;
+            DrawTetromino();
+            collision = true;
+            break;
         }
-      }
-      
-
-    // Update the scoreboard
-    scoreboard.innerText = `Score: ${score} | Level: ${level}`;
-  }
-
-  rotate() {
-    let rotated = [];
-    const n = this.fallingPiece.shape.length;
-    for (let i = 0; i < n; i++) {
-      rotated.push(new Array(n).fill(0));
-    }
-    for (let i = 0; i < n; i++) {
-      for (let j = 0; j < n; j++) {
-        rotated[i][j] = this.fallingPiece.shape[n - j - 1][i];
-      }
-    }
-    if (!this.collision(this.fallingPiece.x, this.fallingPiece.y, rotated)) {
-      this.fallingPiece.shape = rotated;
-    }
-  }
-
-  moveLeft() {
-    if (!this.collision(this.fallingPiece.x - 1, this.fallingPiece.y)) {
-      this.fallingPiece.x--;
-    }
-  }
-
-  moveRight() {
-    if (!this.collision(this.fallingPiece.x + 1, this.fallingPiece.y)) {
-      this.fallingPiece.x++;
-    }
-  }
-
-  moveDown() {
-    if (!this.collision(this.fallingPiece.x, this.fallingPiece.y + 1)) {
-      this.fallingPiece.y++;
-    } else {
-      this.lockPiece();
-      this.clearRows();
-      this.fallingPiece = this.spawnTetromino();
-    }
-  }
-
-  lockPiece() {
-    const { x, y, shape } = this.fallingPiece;
-    const n = shape.length;
-    for (let i = 0; i < n; i++) {
-      for (let j = 0; j < n; j++) {
-        if (shape[i][j] > 0) {
-          this.grid[y + i][x + j] = shape[i][j];
+        if(y >= 20){
+            collision = true;
+            break;
         }
-      }
     }
-  }
+    if(collision){
+        if(startY <= 2){
+            winOrLose = "Game Over";
+            ctx.fillStyle = 'white';
+            ctx.fillRect(310, 242, 140, 30);
+            ctx.fillStyle = 'black';
+            ctx.fillText(winOrLose, 310, 261);
+        } else {
+            for(let i = 0; i < tetrominoCopy.length; i++){
+                let square = tetrominoCopy[i];
+                let x = square[0] + startX;
+                let y = square[1] + startY;
+                stoppedShapeArray[x][y] = curTetrominoColor;
+            }
 
-  clearRows() {
-    let fullRows = [];
-    for (let i = 0; i < ROWS; i++) {
-      if (this.grid[i].every(cell => cell > 0)) {
-        fullRows.push(i);
-      }
+            CheckForCompletedRows();
+
+            CreateTetromino();
+
+            direction = DIRECTION.IDLE;
+            startX = 4;
+            startY = 0;
+            DrawTetromino();
+        }
+
+    }
+}
+function CheckForHorizontalCollision(){
+    let tetrominoCopy = curTetromino;
+    let collision = false;
+
+    for(let i = 0; i < tetrominoCopy.length; i++)
+    {
+ 
+        let square = tetrominoCopy[i];
+        let x = square[0] + startX;
+        let y = square[1] + startY;
+
+        if (direction == DIRECTION.LEFT){
+            x--;
+        }else if (direction == DIRECTION.RIGHT){
+            x++;
+        }
+
+        let stoppedShapeVal = stoppedShapeArray[x][y];
+
+        if (typeof stoppedShapeVal === 'string')
+        {
+            collision=true;
+            break;
+        }
     }
 
-    for (let row of fullRows) {
-      this.grid.splice(row, 1);
-      this.grid.unshift(new Array(COLS).fill(0));
+    return collision;
+}
+function CheckForCompletedRows(){
+
+    let rowsToDelete = 0;
+    let startOfDeletion = 0;
+
+    for (let y = 0; y < gBArrayHeight; y++)
+    {
+        let completed = true;
+        for(let x = 0; x < gBArrayWidth; x++)
+        {
+            let square = stoppedShapeArray[x][y];
+
+            if (square === 0 || (typeof square === 'undefined'))
+            {
+                completed=false;
+                break;
+            }
+        }
+
+        if (completed)
+        {
+            if(startOfDeletion === 0) startOfDeletion = y;
+            rowsToDelete++;
+
+            for(let i = 0; i < gBArrayWidth; i++)
+            {
+                stoppedShapeArray[i][y] = 0;
+                gameBoardArray[i][y] = 0;
+                let coorX = coordinateArray[i][y].x;
+                let coorY = coordinateArray[i][y].y;
+                ctx.fillStyle = 'white';
+                ctx.fillRect(coorX, coorY, 21, 21);
+            }
+        }
     }
-
-    // Update score and level
-    const numRowsCleared = fullRows.length;
-    if (numRowsCleared > 0) {
-      score += 10 * numRowsCleared;
-      level = Math.floor(score / 100) + 1;
+    if(rowsToDelete > 0){
+        score += 10;
+        ctx.fillStyle = 'white';
+        ctx.fillRect(310, 109, 140, 19);
+        ctx.fillStyle = 'black';
+        ctx.fillText(score.toString(), 310, 127);
+        MoveAllRowsDown(rowsToDelete, startOfDeletion);
     }
-  }
-
-  spawnTetromino() {
-    const index = Math.floor(random(tetrominoes.length));
-    const shape = tetrominoes[index];
-    const x = Math.floor(COLS / 2) - Math.floor(shape.length / 2);
-    const y = 0;
-    return new Tetromino(shape, x, y);
-  }
 }
 
-class Tetromino {
-  constructor(shape, x, y) {
-    this.shape = shape;
-    this.x = x;
-    this.y = y;
-  }
+function MoveAllRowsDown(rowsToDelete, startOfDeletion){
+    for (let i = startOfDeletion-1; i >= 0; i--)
+    {
+        for(let x = 0; x < gBArrayWidth; x++)
+        {
+            let y2 = i + rowsToDelete;
+            let square = stoppedShapeArray[x][i];
+            let nextSquare = stoppedShapeArray[x][y2];
+
+            if (typeof square === 'string')
+            {
+                nextSquare = square;
+                gameBoardArray[x][y2] = 1;
+                stoppedShapeArray[x][y2] = square; 
+                let coorX = coordinateArray[x][y2].x;
+                let coorY = coordinateArray[x][y2].y;
+                ctx.fillStyle = nextSquare;
+                ctx.fillRect(coorX, coorY, 21, 21);
+
+                square = 0;
+                gameBoardArray[x][i] = 0;
+                stoppedShapeArray[x][i] = 0;
+                coorX = coordinateArray[x][i].x;
+                coorY = coordinateArray[x][i].y;
+                ctx.fillStyle = 'white';
+                ctx.fillRect(coorX, coorY, 21, 21);
+            }
+        }
+    }
 }
 
 
-function startGame() {
-  const gameContainer = document.getElementById("game-container");
-  gameContainer.style.display = "block";
-  const startButton = document.getElementById("start-button");
-  startButton.style.display = "none";
-  loop();
+function RotateTetromino()
+{
+    let newRotation = new Array();
+    let tetrominoCopy = curTetromino;
+    let curTetrominoBU;
+
+    for(let i = 0; i < tetrominoCopy.length; i++)
+    {
+        curTetrominoBU = [...curTetromino];
+        let x = tetrominoCopy[i][0];
+        let y = tetrominoCopy[i][1];
+        let newX = (GetLastSquareX() - y);
+        let newY = x;
+        newRotation.push([newX, newY]);
+    }
+    DeleteTetromino();
+
+    try{
+        curTetromino = newRotation;
+        DrawTetromino();
+    }  
+
+    catch (e){ 
+        if(e instanceof TypeError) {
+            curTetromino = curTetrominoBU;
+            DeleteTetromino();
+            DrawTetromino();
+        }
+    }
 }
 
-function initializeGame() {
-  const startButton = document.getElementById("start-button");
-  startButton.addEventListener("click", startGame);
+function GetLastSquareX()
+{
+    let lastX = 0;
+     for(let i = 0; i < curTetromino.length; i++)
+    {
+        let square = curTetromino[i];
+        if (square[0] > lastX)
+            lastX = square[0];
+    }
+    return lastX;
 }
-
-function initialize() {
-  setup();
-  initializeGame();
-}
-
-function preload() {
-  loadImage("../IMG/Level1.jpg", initialize);
-}
-
-initialize();
