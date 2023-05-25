@@ -6,6 +6,8 @@ let tetromino;
 let frameRateInterval = 30;
 let frameCounter = 0;
 let tetrominoes = [];
+let scoreboard = document.querySelector("h2");
+let score = 0;
 
 
 function preload() {
@@ -52,6 +54,7 @@ function draw() {
     tetromino.moveDown();
     frameCounter = 0;
   }
+  checkGrid();
 }
 
 function keyPressed() {
@@ -77,4 +80,30 @@ function startGame() {
   setup();
   setInterval(updateGame, 1000);
 }
+function checkGrid() {
+    let count = 0;
+    for (let i = 0; i < tetrominoes.length; i++) {
+      let allFilled = true;
+      for (let j = 0; j < tetrominoes[0].length; j++) {
+        if (tetrominoes[i][j] == 0) {
+          allFilled = false;
+        }
+      }
+      if (allFilled) {
+        count++;
+        tetrominoes.splice(i, 1);
+        tetrominoes.unshift(new Array(COLS).fill(0));
+      }
+    }
+    if(count == 1){
+        score+=10;
+    }else if(count == 2){
+        score+=30;
+    }else if(count == 3){
+        score+=50;
+    }else if(count>3){
+        score+=100
+    }
+    scoreboard.innerHTML = "Score: " + score;
+  }
 startGame();
