@@ -3,6 +3,7 @@ const COLS = 15;
 const BLOCK_SIZE = 30;
 let backgroundImage;
 let tetromino;
+let tetrominoes = [];
 let frameRateInterval = 30;
 let frameCounter = 0;
 
@@ -71,5 +72,4 @@ function startGame() {
   setup();
   setInterval(updateGame, 1000);
 }
-
 startGame();

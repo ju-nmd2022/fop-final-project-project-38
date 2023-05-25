@@ -4,6 +4,7 @@ class Tetromino {
     this.col = Math.floor(COLS / 2); // Initial column position
     this.color = this.getRandomColor();
     this.shape = this.getRandomShape();
+    this.tetrominoes = tetrominoes;
   }
 
   show() {
