@@ -3,7 +3,8 @@ const COLS = 15;
 const BLOCK_SIZE = 30;
 let backgroundImage;
 let gameModel;
-
+let score = 0;
+let scoreboard;
 
 function preload() {
   backgroundImage = loadImage("../IMG/Level1.jpg");
@@ -13,6 +14,7 @@ function setup() {
   const canvas = createCanvas(COLS * BLOCK_SIZE, ROWS * BLOCK_SIZE);
   canvas.parent('canvas-container');
   gameModel = new GameModel();
+  scoreboard = document.getElementById("scoreboard");
 }
 
 function draw() {
@@ -50,31 +52,31 @@ function keyPressed() {
 }
 
 function checkGrid() {
-    let count = 0;
-    for (let i = 0; i < tetrominoes.length; i++) {
-      let allFilled = true;
-      for (let j = 0; j < tetrominoes[0].length; j++) {
-        if (tetrominoes[i][j] == 0) {
-          allFilled = false;
-        }
-      }
-      if (allFilled) {
-        count++;
-        tetrominoes.splice(i, 1);
-        tetrominoes.unshift(new Array(COLS).fill(0));
+  let count = 0;
+  for (let i = 0; i < tetrominoes.length; i++) {
+    let allFilled = true;
+    for (let j = 0; j < tetrominoes[0].length; j++) {
+      if (tetrominoes[i][j] == 0) {
+        allFilled = false;
       }
     }
-    if(count == 1){
-        score+=10;
-    }else if(count == 2){
-        score+=30;
-    }else if(count == 3){
-        score+=50;
-    }else if(count>3){
-        score+=100
+    if (allFilled) {
+      count++;
+      tetrominoes.splice(i, 1);
+      tetrominoes.unshift(new Array(COLS).fill(0));
     }
-    scoreboard.innerHTML = "Score: " + score;
   }
+  if (count == 1) {
+    score += 10;
+  } else if (count == 2) {
+    score += 30;
+  } else if (count == 3) {
+    score += 50;
+  } else if (count > 3) {
+    score += 100;
+  }
+  scoreboard.innerHTML = "Score: " + score;
+}
 
 class GameModel {
   constructor() {
