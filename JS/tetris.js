@@ -1,5 +1,3 @@
-import { Tetromino } from './tetromino.js';
-
 const ROWS = 30;
 const COLS = 15;
 const BLOCK_SIZE = 30;
