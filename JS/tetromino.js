@@ -85,6 +85,21 @@ class Tetromino {
     return color(random(255), random(255), random(255));
   }
 
+  moveDown() {
+    if (this.canMoveDown()) {
+      this.row++;
+    } else {
+      for (let row = 0; row < this.shape.length; row++) {
+        for (let col = 0; col < this.shape[row].length; col++) {
+          if (this.shape[row][col] === 1) {
+            tetrominoes[this.row + row][this.col + col] = this.color;
+          }
+        }
+      }
+      tetromino = new Tetromino();
+    }
+  }
+
   canMoveDown() {
     for (let row = 0; row < this.shape.length; row++) {
       for (let col = 0; col < this.shape[row].length; col++) {
