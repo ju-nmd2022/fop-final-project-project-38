@@ -4,6 +4,7 @@ const BLOCK_SIZE = 30;
 let backgroundImage;
 let gameModel;
 
+
 function preload() {
   backgroundImage = loadImage("../IMG/Level1.jpg");
 }
