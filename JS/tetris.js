@@ -10,13 +10,48 @@ const frameRateInterval = 30;
 const tetrominoes = [
     [],
     [
-      [0,0,0,0],
-      [1,1,1,1],
-      [0,0,0,0],
-      [0,0,0,0]
+        [0,0,0,0],
+        [1,1,1,1],
+        [0,0,0,0],
+        [0,0,0,0]
     ], 
-    // ... rest of the tetromino shapes
-  ];
+
+    [
+        [2,0,0],
+        [2,2,2],
+        [0,0,0],
+    ],
+
+    [
+        [0,0,3],
+        [3,3,3],
+        [0,0,0],
+    ],
+
+    [
+        [4,4],
+        [4,4],
+    ],
+
+    [
+        [0,5,5],
+        [5,5,0],
+        [0,0,0],
+    ],
+
+    [
+        [0,6,0],
+        [6,6,6],
+        [0,0,0],
+    ],
+
+    [
+        [7,7,0],
+        [0,7,7],
+        [0,0,0],
+    ],
+
+]
   
   const COLORS = [
     '#000000',
@@ -29,9 +64,10 @@ const tetrominoes = [
     '#F000FF'
   ];
 
-function preload() {
-  backgroundImage = loadImage("../IMG/Level1.jpg");
-}
+  function preload() {
+    backgroundImage = loadImage("../IMG/Level1.jpg");
+  }
+  
 
 function setup() {
   const canvas = createCanvas(COLS * BLOCK_SIZE, ROWS * BLOCK_SIZE);
@@ -59,6 +95,7 @@ function draw() {
     gameModel.moveDown();
     frameCounter = 0;
   }
+  gameModel.moveDown();
   checkGrid();
 }
 
@@ -141,8 +178,9 @@ class GameModel {
     for (let i = 0; i < this.grid.length; i++) {
       for (let j = 0; j < this.grid[i].length; j++) {
         let cell = this.grid[i][j];
-        fill(COLORS[cell]);
-        rect(j * BLOCK_SIZE, i * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
+        if (cell > 0) {
+          image(backgroundImage, j * BLOCK_SIZE, i * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
+        }
       }
     }
 
@@ -150,6 +188,7 @@ class GameModel {
       this.fallingPiece.renderPiece();
     }
   }
+  
 
   moveDown() {
     if (this.fallingPiece === null) {
@@ -232,7 +271,8 @@ class Piece {
     for (let i = 0; i < this.shape.length; i++) {
       for (let j = 0; j < this.shape[i].length; j++) {
         if (this.shape[i][j] > 0) {
-          fill(COLORS[this.shape[i][j]]);
+          let cellColor = COLORS[this.shape[i][j]]; 
+          fill(cellColor);
           rect(
             (this.x + j) * BLOCK_SIZE,
             (this.y + i) * BLOCK_SIZE,
