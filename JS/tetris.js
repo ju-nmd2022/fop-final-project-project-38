@@ -1,8 +1,6 @@
 const ROWS = 30;
 const COLS = 15;
 const BLOCK_SIZE = 30;
-let tetrominoes = 
-];
 let backgroundImage;
 let canvasContext;
 let tetromino;
