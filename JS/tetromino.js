@@ -1,40 +1,32 @@
-let shapeImages = {};
-
 class Tetromino {
   constructor() {
     this.row = 0; // Initial row position
     this.col = Math.floor(COLS / 2); // Initial column position
+    this.color = this.getRandomColor(); 
     this.shape = this.getRandomShape();
-    this.image = this.getImageForShape(this.shape);
   }
 
   show() {
     for (let row = 0; row < this.shape.length; row++) {
       for (let col = 0; col < this.shape[row].length; col++) {
-        const x = (this.col + col) * BLOCK_SIZE;
-        const y = (this.row + row) * BLOCK_SIZE;
-        const cellValue = this.shape[row][col];
-        if (cellValue === 1) {
-          const shapeKey = JSON.stringify(this.shape);
-          const image = shapeImages[shapeKey];
-          if (image) {
-            image(image, x, y, BLOCK_SIZE, BLOCK_SIZE);
-          } else {
-            fill('red');
-            rect(x, y, BLOCK_SIZE, BLOCK_SIZE);
-          }
+        if (this.shape[row][col] === 1) {
+          fill(this.color);
+          rect(
+            (this.col + col) * BLOCK_SIZE,
+            (this.row + row) * BLOCK_SIZE,
+            BLOCK_SIZE,
+            BLOCK_SIZE
+          );
         }
       }
     }
   }
-  
-  
+
   update() {
   }
 
   moveDown() {
     this.row++;
-    //convert this to if statement to check for collision and so on with the other moves
   }
 
   moveLeft() {
@@ -59,8 +51,8 @@ class Tetromino {
 
   getRandomShape() {
     const shapes = [
-      [[1, 1, 1, 1]], 
-      [[1, 1], [1, 1]], 
+      [[1, 1, 1, 1]],
+      [[1, 1], [1, 1]],
       [[1, 1, 1], [0, 1, 0]],
       [[1, 1, 0], [0, 1, 1]],
       [[0, 1, 1], [1, 1, 0]],
@@ -70,9 +62,8 @@ class Tetromino {
     return random(shapes);
   }
 
-  getImageForShape(shape) {
-    const shapeKey = JSON.stringify(shape);
-    return shapeImages[shapeKey] || null;
+  getRandomColor() {
+    return color(random(255), random(255), random(255));
   }
 
   canMoveDown() {
@@ -85,11 +76,11 @@ class Tetromino {
             nextRow >= ROWS || // Out of bounds
             (nextRow < ROWS && tetrominoes[nextRow][this.col + col]) // Occupied by another tetromino
           ) {
-            return false;
+            return false; // Cannot move down
           }
         }
       }
     }
-    return true; 
+    return true; // Can move down
   }
 }
