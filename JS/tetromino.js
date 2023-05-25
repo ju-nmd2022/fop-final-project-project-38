@@ -1,4 +1,4 @@
-export default class Tetromino {
+class Tetromino {
   constructor() {
       this.row = 0; // Initial row position
       this.col = Math.floor(COLS / 2); // Initial column position
