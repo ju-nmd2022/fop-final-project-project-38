@@ -38,7 +38,12 @@ function draw() {
     tetromino.show();
     frameCounter++;
     if (frameCounter >= frameRateInterval) {
-        tetromino.moveDown();
+        if (tetromino.canMoveDown()) {
+            tetromino.moveDown();
+        } else {
+            tetromino.freeze(); 
+            tetromino = new Tetromino();
+        }
         frameCounter = 0;
     }
 }
