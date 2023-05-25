@@ -2,7 +2,7 @@ class Tetromino {
   constructor() {
     this.row = 0; // Initial row position
     this.col = Math.floor(COLS / 2); // Initial column position
-    this.color = this.getRandomColor(); 
+    this.color = this.getRandomColor();
     this.shape = this.getRandomShape();
   }
 
@@ -22,19 +22,36 @@ class Tetromino {
     }
   }
 
-  update() {
-  }
+  update() {}
 
   moveDown() {
-    this.row++;
+    if (this.canMoveDown()) {
+      this.row++;
+    } else {
+      // Tetromino has reached the bottom or collided with another tetromino
+      // Add the current tetromino to the tetrominoes array
+      for (let row = 0; row < this.shape.length; row++) {
+        for (let col = 0; col < this.shape[row].length; col++) {
+          if (this.shape[row][col] === 1) {
+            tetrominoes[this.row + row][this.col + col] = this.color;
+          }
+        }
+      }
+      // Create a new tetromino
+      tetromino = new Tetromino();
+    }
   }
 
   moveLeft() {
-    this.col--;
+    if (this.canMoveLeft()) {
+      this.col--;
+    }
   }
 
   moveRight() {
-    this.col++;
+    if (this.canMoveRight()) {
+      this.col++;
+    }
   }
 
   rotate() {
@@ -46,7 +63,9 @@ class Tetromino {
       }
       rotatedShape.push(newRow);
     }
-    this.shape = rotatedShape;
+    if (this.canRotate(rotatedShape)) {
+      this.shape = rotatedShape;
+    }
   }
 
   getRandomShape() {
@@ -76,11 +95,67 @@ class Tetromino {
             nextRow >= ROWS || // Out of bounds
             (nextRow < ROWS && tetrominoes[nextRow][this.col + col]) // Occupied by another tetromino
           ) {
-            return false; // Cannot move down
+            return false; 
           }
         }
       }
     }
-    return true; // Can move down
+    return true; 
+  }
+
+  canMoveLeft() {
+    for (let row = 0; row < this.shape.length; row++) {
+      for (let col = 0; col < this.shape[row].length; col++) {
+        if (this.shape[row][col] === 1) {
+          const nextCol = this.col + col - 1;
+          // 
+          if (
+            nextCol < 0 || 
+            (nextCol >= 0 && tetrominoes[this.row + row][nextCol]) 
+          ) {
+            return false;
+          }
+        }
+      }
+    }
+    return true;
+  }
+
+  canMoveRight() {
+    for (let row = 0; row < this.shape.length; row++) {
+      for (let col = 0; col < this.shape[row].length; col++) {
+        if (this.shape[row][col] === 1) {
+          const nextCol = this.col + col + 1;
+          if (
+            nextCol >= COLS || 
+            (nextCol < COLS && tetrominoes[this.row + row][nextCol]) 
+          ) {
+            return false;
+          }
+        }
+      }
+    }
+    return true;
+  }
+
+  canRotate(rotatedShape) {
+    for (let row = 0; row < rotatedShape.length; row++) {
+      for (let col = 0; col < rotatedShape[row].length; col++) {
+        if (rotatedShape[row][col] === 1) {
+          const newRow = this.row + row;
+          const newCol = this.col + col;
+          if (
+            newRow < 0 || 
+            newRow >= ROWS || 
+            newCol < 0 || 
+            newCol >= COLS || 
+            tetrominoes[newRow][newCol] 
+          ) {
+            return false;
+          }
+        }
+      }
+    }
+    return true; 
   }
 }
