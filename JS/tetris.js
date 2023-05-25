@@ -4,7 +4,7 @@ const BLOCK_SIZE = 30;
 let tetrominoes = [];
 let backgroundImage;
 let canvasContext;
-const tetromino = new Tetromino();
+let tetromino;
 
 function preload() {
     backgroundImage = loadImage("../IMG/Level1.jpg");
@@ -14,6 +14,7 @@ function setup() {
     const canvas = createCanvas(COLS * BLOCK_SIZE, ROWS * BLOCK_SIZE);
     canvas.parent('canvas-container');
     canvasContext = canvas.canvas.getContext('2d');
+    tetromino = new Tetromino();
 }
 
 function draw() {
