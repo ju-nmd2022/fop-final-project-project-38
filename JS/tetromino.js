@@ -67,10 +67,23 @@ class Tetromino {
     if (this.canMove(this.col, this.row, rotatedShape)) {
       this.shape = rotatedShape;
       
-      updateGameGrid();
+      renderGame();
     }
   }
   
+  function renderGame() {
+    const canvas = document.getElementById("canvas-container");
+    const ctx = canvas.getContext("2d");
+    
+    for (let i = 0; i < tetrominoes.length; i++) {
+      for (let j = 0; j < tetrominoes[i].length; j++) {
+        ctx.fillStyle = COLORS[tetrominoes[i][j]];
+        ctx.fillRect(j * BLOCK_SIZE, i * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
+      }
+    }
+    
+    renderPiece();
+  }
   
 
   getRandomShape() {
