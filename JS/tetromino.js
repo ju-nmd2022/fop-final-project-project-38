@@ -59,6 +59,7 @@ class Tetromino {
   }
 
   getRandomColor() {
-      return color(random(255), random(255), random(255)); // Generate a random color
+    const randomColor = () => Math.floor(Math.random() * 256);
+    return color(randomColor(), randomColor(), randomColor()); 
   }
 }
