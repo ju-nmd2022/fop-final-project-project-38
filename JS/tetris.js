@@ -73,7 +73,7 @@ const tetrominoes = [
   
 
 function setup() {
-  canvas = createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
+  canvas = createCanvas(450, 900);
   canvas.parent("game-canvas");
   gameModel = new GameModel();
 }
