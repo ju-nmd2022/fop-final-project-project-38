@@ -23,7 +23,9 @@ class Tetromino {
     }
   }
 
-  update() {}
+  update() {
+    
+  }
 
   moveDown() {
     if (this.canMoveDown()) {
