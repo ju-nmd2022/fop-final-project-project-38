@@ -2,16 +2,16 @@ class Tetromino {
   constructor() {
     this.row = 0; // Initial row position
     this.col = Math.floor(COLS / 2); // Initial column position
-    this.color = this.getRandomColor(); 
     this.shape = this.getRandomShape();
+    this.image = this.getImageForShape(this.shape);
   }
 
   show() {
     for (let row = 0; row < this.shape.length; row++) {
       for (let col = 0; col < this.shape[row].length; col++) {
         if (this.shape[row][col] === 1) {
-          fill(this.color);
-          rect(
+          image(
+            this.image,
             (this.col + col) * BLOCK_SIZE,
             (this.row + row) * BLOCK_SIZE,
             BLOCK_SIZE,
