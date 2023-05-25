@@ -1,9 +1,14 @@
 body {
-    text-align: center;
-    background: #fff;
-}
-#my-canvas {
-    background: #fff;
-    margin-left: 10px;
-    margin-top: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    flex-direction: column;
+  }
+h1 {
+    font-weight: bolder;
+    font-family: Impact;
+    font-size: 56px;
+    color: rgb(62, 76, 48);
 }
