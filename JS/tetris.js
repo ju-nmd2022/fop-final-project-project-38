@@ -27,7 +27,7 @@ function preload() {
 function setup() {
   const canvas = createCanvas(COLS * BLOCK_SIZE, ROWS * BLOCK_SIZE);
   canvas.parent('canvas-container');
-  const tetrominoes = [];
+  tetrominoes = [];
   for (let i = 0; i < ROWS; i++) {
     tetrominoes.push(new Array(COLS).fill(0));
   }
