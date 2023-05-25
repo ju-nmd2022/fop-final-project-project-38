@@ -63,8 +63,18 @@ class Tetromino {
     return random(shapes);
   }
 
-  getRandomColor() {
-    return color(random(255), random(255), random(255));
+  getImageForShape(shape) {
+    const shapeImagesMap = {
+      [[[1, 1, 1, 1]]]: loadImage("../IMG/shape1.png"),
+      [[[1, 1], [1, 1]]]: loadImage("../IMG/shape2.png"),
+      [[[1, 1, 1], [0, 1, 0]]]: loadImage("../IMG/shape3.png"),
+      [[[1, 1, 0], [0, 1, 1]]]: loadImage("../IMG/shape4.png"),
+      [[[0, 1, 1], [1, 1, 0]]]: loadImage("../IMG/shape5.png"),
+      [[[1, 1, 1], [1, 0, 0]]]: loadImage("../IMG/shape6.png"),
+      [[[1, 1, 1], [0, 0, 1]]]: loadImage("../IMG/shape7.png"),
+    };
+    const shapeKey = JSON.stringify(shape);
+    return shapeImagesMap[shapeKey];
   }
 
   canMoveDown() {
