@@ -5,7 +5,7 @@ let backgroundImage;
 let tetromino;
 let frameRateInterval = 30;
 let frameCounter = 0;
-let tetrominoes = [];
+
 
 function preload() {
   backgroundImage = loadImage("../IMG/Level1.jpg");
