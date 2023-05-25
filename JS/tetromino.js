@@ -28,16 +28,15 @@ class Tetromino {
         const cellValue = this.shape[row][col];
         if (cellValue === 1) {
           if (this.image) {
-            image(this.image, x, y, BLOCK_SIZE, BLOCK_SIZE);
+            canvasContext.drawImage(this.image, x, y, BLOCK_SIZE, BLOCK_SIZE);
           } else {
-            fill('red');
-            rect(x, y, BLOCK_SIZE, BLOCK_SIZE);
+            canvasContext.fillStyle = 'red';
+            canvasContext.fillRect(x, y, BLOCK_SIZE, BLOCK_SIZE);
           }
         }
       }
     }
   }
-
   update() {
   }
 
