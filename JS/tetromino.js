@@ -80,10 +80,8 @@ class Tetromino {
   }
 
   getImageForShape(shape) {
-    getImageForShape(shape) {
-      const shapeKey = JSON.stringify(shape);
-      return shapeImages[shapeKey] || null;
-    }
+    const shapeKey = JSON.stringify(shape);
+    return shapeImages[shapeKey] || null;
   }
 
   canMoveDown() {
