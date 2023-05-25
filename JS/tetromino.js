@@ -62,4 +62,22 @@ class Tetromino {
     const randomColor = () => Math.floor(Math.random() * 256);
     return color(randomColor(), randomColor(), randomColor()); 
   }
+
+  canMoveDown() {
+    for (let row = 0; row < this.shape.length; row++) {
+      for (let col = 0; col < this.shape[row].length; col++) {
+        if (this.shape[row][col] === 1) {
+          const nextRow = this.row + row + 1;
+          // Check if the next row is out of bounds or occupied by another tetromino
+          if (
+            nextRow >= ROWS || // Out of bounds
+            (nextRow < ROWS && tetrominoes[nextRow][this.col + col]) // Occupied by another tetromino
+          ) {
+            return false;
+          }
+        }
+      }
+    }
+    return true;
+  }
 }

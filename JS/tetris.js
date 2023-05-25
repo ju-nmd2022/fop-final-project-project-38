@@ -36,18 +36,13 @@ function draw() {
     canvasContext.stroke();
 
     tetromino.show();
+
+    // Update the tetromino position
     frameCounter++;
     if (frameCounter >= frameRateInterval) {
-        if (tetromino.canMoveDown()) {
-            tetromino.moveDown();
-        } else {
-            tetromino.freeze(); 
-            tetromino = new Tetromino(); 
-        }
+        tetromino.moveDown();
         frameCounter = 0;
     }
-
-    requestAnimationFrame(draw);
 }
 
 function keyPressed() {
@@ -63,18 +58,15 @@ function keyPressed() {
 }
 
 function updateGame() {
-   
 }
 
-// Initialize the game
 function initGame() {
-    
 }
 
 function startGame() {
     initGame();
     setup();
-    requestAnimationFrame(draw);
+    setInterval(updateGame, 1000);
 }
 
 startGame();
