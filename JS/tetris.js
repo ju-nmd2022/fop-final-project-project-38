@@ -42,10 +42,12 @@ function draw() {
             tetromino.moveDown();
         } else {
             tetromino.freeze(); 
-            tetromino = new Tetromino();
+            tetromino = new Tetromino(); 
         }
         frameCounter = 0;
     }
+
+    requestAnimationFrame(draw);
 }
 
 function keyPressed() {
@@ -72,7 +74,7 @@ function initGame() {
 function startGame() {
     initGame();
     setup();
-    setInterval(updateGame, 1000);
+    requestAnimationFrame(draw);
 }
 
 startGame();
