@@ -1,17 +1,5 @@
 let shapeImages = {};
 
-function preload() {
-  shapeImages = {
-    [[[1, 1, 1, 1]]]: loadImage("../IMG/shape1.png"),
-    [[[1, 1], [1, 1]]]: loadImage("../IMG/shape2.png"),
-    [[[1, 1, 1], [0, 1, 0]]]: loadImage("../IMG/shape3.png"),
-    [[[1, 1, 0], [0, 1, 1]]]: loadImage("../IMG/shape4.png"),
-    [[[0, 1, 1], [1, 1, 0]]]: loadImage("../IMG/shape5.png"),
-    [[[1, 1, 1], [1, 0, 0]]]: loadImage("../IMG/shape6.png"),
-    [[[1, 1, 1], [0, 0, 1]]]: loadImage("../IMG/shape7.png"),
-  };
-}
-
 class Tetromino {
   constructor() {
     this.row = 0; // Initial row position
