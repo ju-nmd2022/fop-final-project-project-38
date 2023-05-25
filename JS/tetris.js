@@ -61,11 +61,9 @@ function keyPressed() {
 }
 
 function updateGame() {
-  // Add any additional game logic here
 }
 
 function initGame() {
-  // Add any game initialization code here
 }
 
 function startGame() {
