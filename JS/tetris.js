@@ -5,7 +5,7 @@ let tetrominoes = [];
 let backgroundImage;
 
 function preload() {
-    backgroundImage = loadImage("../Level1.jpg");
+    backgroundImage = loadImage("../IMG/Level1.jpg");
   }
 
 function setup() {
