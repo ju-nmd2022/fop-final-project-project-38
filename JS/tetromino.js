@@ -67,7 +67,7 @@ class Tetromino {
     if (this.canMove(this.col, this.row, rotatedShape)) {
       this.shape = rotatedShape;
       
-      update();
+      updateGameGrid();
     }
   }
   
