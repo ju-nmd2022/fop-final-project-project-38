@@ -1,3 +1,5 @@
+const GAME_CLOCK = 1000;
+const SCORE_WORTH = 10;
 const ROWS = 30;
 const COLS = 15;
 const BLOCK_SIZE = 30;
@@ -5,8 +7,8 @@ let backgroundImage;
 let gameModel;
 let score = 0;
 let frameCounter = 0;
-let canvas = document.getElementById("game-canvas") 
-let scoreboard = document.getElementById("scoreboard") 
+let canvas = document.getElementById("game-canvas"); 
+let scoreboard = document.getElementById("scoreboard"); 
 const frameRateInterval = 30;
 const tetrominoes = [
     [],
