@@ -5,6 +5,8 @@ let tetrominoes = [];
 let backgroundImage;
 let canvasContext;
 let tetromino;
+let frameRateInterval = 30;
+let frameCounter = 0;
 
 function preload() {
     backgroundImage = loadImage("../IMG/Level1.jpg");
@@ -34,7 +36,11 @@ function draw() {
     canvasContext.stroke();
 
     tetromino.show();
-    tetromino.update();
+    frameCounter++;
+    if (frameCounter >= frameRateInterval) {
+        tetromino.moveDown();
+        frameCounter = 0;
+    }
 }
 
 function keyPressed() {
