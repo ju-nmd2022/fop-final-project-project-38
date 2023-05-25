@@ -26,28 +26,50 @@ class Tetromino {
   }
 
   moveDown() {
-    this.row++;
+    if (this.canMove(this.col, this.row + 1, this.shape)) {
+      this.row++;
+    }
   }
 
   moveLeft() {
-    this.col--;
+    if (this.canMove(this.col - 1, this.row, this.shape)) {
+      this.col--;
+    }
   }
 
   moveRight() {
-    this.col++;
+    if (this.canMove(this.col + 1, this.row, this.shape)) {
+      this.col++;
+    }
   }
 
   rotate() {
     const rotatedShape = [];
-    for (let col = 0; col < this.shape[0].length; col++) {
-      const newRow = [];
-      for (let row = this.shape.length - 1; row >= 0; row--) {
-        newRow.push(this.shape[row][col]);
+    const piece = this.shape;
+  
+    for (let i = 0; i < piece.length; i++) {
+      rotatedShape.push([]);
+      for (let j = 0; j < piece[i].length; j++) {
+        rotatedShape[i].push(0);
       }
-      rotatedShape.push(newRow);
     }
-    this.shape = rotatedShape;
+  
+    for (let i = 0; i < piece.length; i++) {
+      for (let j = 0; j < piece[i].length; j++) {
+        rotatedShape[i][j] = piece[j][i];
+      }
+    }
+  
+    for (let i = 0; i < rotatedShape.length; i++) {
+      rotatedShape[i] = rotatedShape[i].reverse();
+    }
+  
+    if (!this.canMove(this.col, this.row, rotatedShape)) {
+      this.shape = rotatedShape;
+    }
+    renderGame();
   }
+  
 
   getRandomShape() {
     const shapes = [
@@ -62,21 +84,19 @@ class Tetromino {
     return color(random(255), random(255), random(255)); // Generate a random color
   }
 
-  canMoveDown() {
-    for (let row = 0; row < this.shape.length; row++) {
-      for (let col = 0; col < this.shape[row].length; col++) {
-        if (this.shape[row][col] === 1) {
-          const nextRow = this.row + row + 1;
-          // Check if the next row is out of bounds or occupied by another tetromino
-          if (
-            nextRow >= ROWS || // Out of bounds
-            (nextRow < ROWS && tetrominoes[nextRow][this.col + col]) // Occupied by another tetromino
-          ) {
-            return false; // Cannot move down
+  canMove(x, y, rotatedPiece) {
+    const piece = rotatedPiece || this.shape;
+    for (let i = 0; i < piece.length; i++) {
+      for (let j = 0; j < piece[i].length; j++) {
+        if (piece[i][j] === 1) {
+          const p = x + j;
+          const q = y + i;
+          if (q >= ROWS || (p >= 0 && p < COLS && tetrominoes[q][p] > 0)) {
+            return false;
           }
         }
       }
     }
-    return true; // Can move down
+    return true;
   }
 }
