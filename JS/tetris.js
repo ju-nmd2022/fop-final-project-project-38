@@ -4,8 +4,9 @@ const BLOCK_SIZE = 30;
 let backgroundImage;
 let gameModel;
 let score = 0;
-let scoreboard;
 let frameCounter = 0;
+let canvas = document.getElementById("game-canvas") 
+let scoreboard = document.getElementById("scoreboard") 
 const frameRateInterval = 30;
 const tetrominoes = [
     [],
@@ -70,10 +71,8 @@ const tetrominoes = [
   
 
 function setup() {
-  const canvas = createCanvas(COLS * BLOCK_SIZE, ROWS * BLOCK_SIZE);
-  canvas.parent('canvas-container');
+  createCanvas(COLS * BLOCK_SIZE, ROWS * BLOCK_SIZE);
   gameModel = new GameModel();
-  scoreboard = document.getElementById("scoreboard");
 }
 
 function draw() {
