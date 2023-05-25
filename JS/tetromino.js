@@ -1,3 +1,17 @@
+let shapeImages = {};
+
+function preload() {
+  shapeImages = {
+    [[[1, 1, 1, 1]]]: loadImage("../IMG/shape1.png"),
+    [[[1, 1], [1, 1]]]: loadImage("../IMG/shape2.png"),
+    [[[1, 1, 1], [0, 1, 0]]]: loadImage("../IMG/shape3.png"),
+    [[[1, 1, 0], [0, 1, 1]]]: loadImage("../IMG/shape4.png"),
+    [[[0, 1, 1], [1, 1, 0]]]: loadImage("../IMG/shape5.png"),
+    [[[1, 1, 1], [1, 0, 0]]]: loadImage("../IMG/shape6.png"),
+    [[[1, 1, 1], [0, 0, 1]]]: loadImage("../IMG/shape7.png"),
+  };
+}
+
 class Tetromino {
   constructor() {
     this.row = 0; // Initial row position
@@ -9,14 +23,17 @@ class Tetromino {
   show() {
     for (let row = 0; row < this.shape.length; row++) {
       for (let col = 0; col < this.shape[row].length; col++) {
-        if (this.shape[row][col] === 1) {
-          image(
-            this.image,
-            (this.col + col) * BLOCK_SIZE,
-            (this.row + row) * BLOCK_SIZE,
-            BLOCK_SIZE,
-            BLOCK_SIZE
-          );
+        const x = (this.col + col) * BLOCK_SIZE;
+        const y = (this.row + row) * BLOCK_SIZE;
+        const cellValue = this.shape[row][col];
+        if (cellValue === 1) {
+          if (this.image) {
+            image(this.image, x, y, BLOCK_SIZE, BLOCK_SIZE);
+          } else {
+            const color = this.getRandomColor();
+            fill(color);
+            rect(x, y, BLOCK_SIZE, BLOCK_SIZE);
+          }
         }
       }
     }
@@ -64,17 +81,8 @@ class Tetromino {
   }
 
   getImageForShape(shape) {
-    const shapeImagesMap = {
-      [[[1, 1, 1, 1]]]: loadImage("../IMG/shape1.png"),
-      [[[1, 1], [1, 1]]]: loadImage("../IMG/shape2.png"),
-      [[[1, 1, 1], [0, 1, 0]]]: loadImage("../IMG/shape3.png"),
-      [[[1, 1, 0], [0, 1, 1]]]: loadImage("../IMG/shape4.png"),
-      [[[0, 1, 1], [1, 1, 0]]]: loadImage("../IMG/shape5.png"),
-      [[[1, 1, 1], [1, 0, 0]]]: loadImage("../IMG/shape6.png"),
-      [[[1, 1, 1], [0, 0, 1]]]: loadImage("../IMG/shape7.png"),
-    };
     const shapeKey = JSON.stringify(shape);
-    return shapeImagesMap[shapeKey];
+    return shapeImages[shapeKey];
   }
 
   canMoveDown() {
