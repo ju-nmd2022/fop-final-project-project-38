@@ -1,5 +1,5 @@
-const ROWS = 20;
-const COLS = 10;
+const ROWS = 30;
+const COLS = 15;
 const BLOCK_SIZE = 30;
 let backgroundImage;
 let gameModel;
@@ -9,25 +9,24 @@ let scoreboard;
 let frameCounter = 0;
 const frameRateInterval = 30;
 const tetrominoes = [
-  [],
-  [
-    [0, 0, 0, 0],
-    [1, 1, 1, 1],
-    [0, 0, 0, 0],
-    [0, 0, 0, 0]
-  ],
-  // Rest of the tetromino shapes
+  [[1, 1, 1, 1]],
+  [[1, 0, 0], [1, 1, 1]],
+  [[0, 0, 1], [1, 1, 1]],
+  [[1, 1], [1, 1]],
+  [[0, 1, 1], [1, 1, 0]],
+  [[0, 1, 0], [1, 1, 1]],
+  [[1, 1, 0], [0, 1, 1]]
 ];
 
 const COLORS = [
-  '#000000',
-  '#FF0000',
-  '#00FF00',
-  '#0000FF',
-  '#FFFF00',
-  '#00FFFF',
-  '#10FF01',
-  '#F000FF'
+  "#000000",
+  "#FF0000",
+  "#00FF00",
+  "#0000FF",
+  "#FFFF00",
+  "#00FFFF",
+  "#10FF01",
+  "#F000FF"
 ];
 
 function preload() {
@@ -36,31 +35,14 @@ function preload() {
 
 function setup() {
   const canvas = createCanvas(COLS * BLOCK_SIZE, ROWS * BLOCK_SIZE);
-  canvas.parent('canvas-container');
+  canvas.parent("canvas-container");
   gameModel = new GameModel();
   scoreboard = document.getElementById("scoreboard");
 }
 
 function draw() {
   background(backgroundImage);
-  stroke(0);
-  strokeWeight(1);
-  for (let i = 0; i <= COLS; i++) {
-    line(i * BLOCK_SIZE, 0, i * BLOCK_SIZE, height);
-  }
-  for (let i = 0; i <= ROWS; i++) {
-    line(0, i * BLOCK_SIZE, width, i * BLOCK_SIZE);
-  }
-
   gameModel.renderGameState();
-
-  // Update the game state
-  frameCounter++;
-  if (frameCounter >= frameRateInterval - level * 2) {
-    gameModel.moveDown();
-    frameCounter = 0;
-  }
-  checkGrid();
 }
 
 function keyPressed() {
@@ -75,39 +57,9 @@ function keyPressed() {
   }
 }
 
-function checkGrid() {
-  let count = 0;
-  for (let i = 0; i < tetrominoes.length; i++) {
-    let allFilled = true;
-    for (let j = 0; j < tetrominoes[0].length; j++) {
-      if (tetrominoes[i][j] == 0) {
-        allFilled = false;
-      }
-    }
-    if (allFilled) {
-      count++;
-      tetrominoes.splice(i, 1);
-      tetrominoes.unshift(new Array(COLS).fill(0));
-    }
-  }
-  if (count == 1) {
-    score += 10;
-  } else if (count == 2) {
-    score += 30;
-  } else if (count == 3) {
-    score += 50;
-  } else if (count > 3) {
-    score += 100;
-  }
-  if (score >= level * 200) {
-    level++;
-  }
-  scoreboard.innerHTML = "Score: " + score + " | Level: " + level;
-}
-
 class GameModel {
   constructor() {
-    this.fallingPiece = null;
+    this.fallingPiece = this.spawnTetromino();
     this.grid = this.makeStartingGrid();
   }
 
@@ -142,133 +94,116 @@ class GameModel {
   }
 
   renderGameState() {
+    stroke(0);
+    strokeWeight(1);
+    for (let i = 0; i <= COLS; i++) {
+      line(i * BLOCK_SIZE, 0, i * BLOCK_SIZE, height);
+    }
+    for (let i = 0; i <= ROWS; i++) {
+      line(0, i * BLOCK_SIZE, width, i * BLOCK_SIZE);
+    }
+
     for (let i = 0; i < this.grid.length; i++) {
       for (let j = 0; j < this.grid[i].length; j++) {
-        let cell = this.grid[i][j];
-        if (cell > 0) {
+        const cell = this.grid[i][j];
+        if (cell !== 0) {
           fill(COLORS[cell]);
-          rect(
-            j * BLOCK_SIZE,
-            i * BLOCK_SIZE,
-            BLOCK_SIZE,
-            BLOCK_SIZE
-          );
+          rect(j * BLOCK_SIZE, i * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
         }
       }
     }
 
-    if (this.fallingPiece !== null) {
-      this.fallingPiece.renderPiece();
+    const { x, y, shape } = this.fallingPiece;
+    for (let i = 0; i < shape.length; i++) {
+      for (let j = 0; j < shape[i].length; j++) {
+        if (shape[i][j] > 0) {
+          fill(COLORS[shape[i][j]]);
+          rect((x + j) * BLOCK_SIZE, (y + i) * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
+        }
+      }
+    }
+
+    // Update the scoreboard
+    scoreboard.innerText = `Score: ${score} | Level: ${level}`;
+  }
+
+  rotate() {
+    let rotated = [];
+    const n = this.fallingPiece.shape.length;
+    for (let i = 0; i < n; i++) {
+      rotated.push(new Array(n).fill(0));
+    }
+    for (let i = 0; i < n; i++) {
+      for (let j = 0; j < n; j++) {
+        rotated[i][j] = this.fallingPiece.shape[n - j - 1][i];
+      }
+    }
+    if (!this.collision(this.fallingPiece.x, this.fallingPiece.y, rotated)) {
+      this.fallingPiece.shape = rotated;
+    }
+  }
+
+  moveLeft() {
+    if (!this.collision(this.fallingPiece.x - 1, this.fallingPiece.y)) {
+      this.fallingPiece.x--;
+    }
+  }
+
+  moveRight() {
+    if (!this.collision(this.fallingPiece.x + 1, this.fallingPiece.y)) {
+      this.fallingPiece.x++;
     }
   }
 
   moveDown() {
-    if (this.fallingPiece === null) {
-      this.renderGameState();
-      return;
-    } else if (this.collision(this.fallingPiece.x, this.fallingPiece.y + 1)) {
-      const shape = this.fallingPiece.shape;
-      const x = this.fallingPiece.x;
-      const y = this.fallingPiece.y;
-      shape.forEach((row, i) => {
-        row.forEach((cell, j) => {
-          let p = x + j;
-          let q = y + i;
-          if (p >= 0 && p < COLS && q < ROWS && cell > 0) {
-            this.grid[q][p] = shape[i][j];
-          }
-        });
-      });
-
-      this.fallingPiece = null;
-      this.clearRows();
-      if (this.checkGameOver()) {
-        alert("Game over!");
-        this.grid = this.makeStartingGrid();
-        score = 0;
-        level = 1;
-      }
+    if (!this.collision(this.fallingPiece.x, this.fallingPiece.y + 1)) {
+      this.fallingPiece.y++;
     } else {
-      this.fallingPiece.y += 1;
+      this.lockPiece();
+      this.clearRows();
+      this.fallingPiece = this.spawnTetromino();
     }
-    this.renderGameState();
   }
 
-  moveLeft() {
-    if (this.fallingPiece === null) {
-      return;
-    }
-
-    let x = this.fallingPiece.x;
-    let y = this.fallingPiece.y;
-    if (!this.collision(x - 1, y)) {
-      this.fallingPiece.x -= 1;
-    }
-    this.renderGameState();
-  }
-
-  moveRight() {
-    if (this.fallingPiece === null) {
-      return;
-    }
-
-    let x = this.fallingPiece.x;
-    let y = this.fallingPiece.y;
-    if (!this.collision(x + 1, y)) {
-      this.fallingPiece.x += 1;
-    }
-    this.renderGameState();
-  }
-
-  rotate() {
-    if (this.fallingPiece !== null) {
-      let shape = [...this.fallingPiece.shape.map((row) => [...row])];
-      const n = shape.length;
-      for (let i = 0; i < n; i++) {
-        for (let j = 0; j < i; j++) {
-          [shape[i][j], shape[j][i]] = [shape[j][i], shape[i][j]];
+  lockPiece() {
+    const { x, y, shape } = this.fallingPiece;
+    const n = shape.length;
+    for (let i = 0; i < n; i++) {
+      for (let j = 0; j < n; j++) {
+        if (shape[i][j] > 0) {
+          this.grid[y + i][x + j] = shape[i][j];
         }
       }
-      shape.forEach((row) => row.reverse());
-
-      if (!this.collision(this.fallingPiece.x, this.fallingPiece.y, shape)) {
-        this.fallingPiece.shape = shape;
-      }
     }
-    this.renderGameState();
   }
 
   clearRows() {
-    let rowsCleared = 0;
-    for (let i = ROWS - 1; i >= 0; i--) {
-      if (this.grid[i].every((cell) => cell !== 0)) {
-        this.grid.splice(i, 1);
-        this.grid.unshift(new Array(COLS).fill(0));
-        rowsCleared++;
+    let fullRows = [];
+    for (let i = 0; i < ROWS; i++) {
+      if (this.grid[i].every(cell => cell > 0)) {
+        fullRows.push(i);
       }
     }
-    if (rowsCleared === 1) {
-      score += 10;
-    } else if (rowsCleared === 2) {
-      score += 30;
-    } else if (rowsCleared === 3) {
-      score += 50;
-    } else if (rowsCleared > 3) {
-      score += 100;
+
+    for (let row of fullRows) {
+      this.grid.splice(row, 1);
+      this.grid.unshift(new Array(COLS).fill(0));
     }
-    if (score >= level * 200) {
-      level++;
+
+    // Update score and level
+    const numRowsCleared = fullRows.length;
+    if (numRowsCleared > 0) {
+      score += 10 * numRowsCleared;
+      level = Math.floor(score / 100) + 1;
     }
-    scoreboard.innerHTML = "Score: " + score + " | Level: " + level;
   }
 
-  checkGameOver() {
-    for (let i = 0; i < COLS; i++) {
-      if (this.grid[0][i] !== 0) {
-        return true;
-      }
-    }
-    return false;
+  spawnTetromino() {
+    const index = Math.floor(random(tetrominoes.length));
+    const shape = tetrominoes[index];
+    const x = Math.floor(COLS / 2) - Math.floor(shape.length / 2);
+    const y = 0;
+    return new Tetromino(shape, x, y);
   }
 }
 
@@ -278,30 +213,29 @@ class Tetromino {
     this.x = x;
     this.y = y;
   }
-
-  renderPiece() {
-    for (let i = 0; i < this.shape.length; i++) {
-      for (let j = 0; j < this.shape[i].length; j++) {
-        if (this.shape[i][j] > 0) {
-          fill(COLORS[this.shape[i][j]]);
-          rect(
-            (this.x + j) * BLOCK_SIZE,
-            (this.y + i) * BLOCK_SIZE,
-            BLOCK_SIZE,
-            BLOCK_SIZE
-          );
-        }
-      }
-    }
-  }
 }
 
-function spawnTetromino() {
-  const randomIndex = Math.floor(Math.random() * tetrominoes.length);
-  const shape = tetrominoes[randomIndex];
-  const x = Math.floor((COLS - shape[0].length) / 2);
-  const y = 0;
-  gameModel.fallingPiece = new Tetromino(shape, x, y);
+
+function startGame() {
+  const gameContainer = document.getElementById("game-container");
+  gameContainer.style.display = "block";
+  const startButton = document.getElementById("start-button");
+  startButton.style.display = "none";
+  loop();
 }
 
-spawnTetromino();
+function initializeGame() {
+  const startButton = document.getElementById("start-button");
+  startButton.addEventListener("click", startGame);
+}
+
+function initialize() {
+  setup();
+  initializeGame();
+}
+
+function preload() {
+  loadImage("../IMG/Level1.jpg", initialize);
+}
+
+initialize();
