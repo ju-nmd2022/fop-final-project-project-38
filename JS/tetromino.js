@@ -15,16 +15,20 @@ class Tetromino {
         const y = (this.row + row) * BLOCK_SIZE;
         const cellValue = this.shape[row][col];
         if (cellValue === 1) {
-          if (this.image) {
-            canvasContext.drawImage(this.image, x, y, BLOCK_SIZE, BLOCK_SIZE);
+          const shapeKey = JSON.stringify(this.shape);
+          const image = shapeImages[shapeKey];
+          if (image) {
+            image(image, x, y, BLOCK_SIZE, BLOCK_SIZE);
           } else {
-            canvasContext.fillStyle = 'red';
-            canvasContext.fillRect(x, y, BLOCK_SIZE, BLOCK_SIZE);
+            fill('red');
+            rect(x, y, BLOCK_SIZE, BLOCK_SIZE);
           }
         }
       }
     }
   }
+  
+  
   update() {
   }
 

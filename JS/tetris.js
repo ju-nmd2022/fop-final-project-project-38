@@ -23,7 +23,6 @@ function preload() {
 function setup() {
   const canvas = createCanvas(COLS * BLOCK_SIZE, ROWS * BLOCK_SIZE);
   canvas.parent('canvas-container');
-  canvasContext = canvas.canvas.getContext('2d');
   tetromino = new Tetromino();
 }
 
