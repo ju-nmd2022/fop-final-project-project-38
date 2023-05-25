@@ -5,7 +5,7 @@ export default class Tetromino {
     this.sprite.addAnimation('default', this.loadShape(shapeFile));
     this.x = 0;
     this.y = 0;
-    this.speed = 1; // Speed at which the tetromino moves
+    this.speed = 1;
   }
   
   loadShape(shapeFile) {
