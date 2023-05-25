@@ -5,6 +5,29 @@ let backgroundImage;
 let gameModel;
 let score = 0;
 let scoreboard;
+let frameCounter = 0;
+const frameRateInterval = 30;
+const tetrominoes = [
+    [],
+    [
+      [0,0,0,0],
+      [1,1,1,1],
+      [0,0,0,0],
+      [0,0,0,0]
+    ], 
+    // ... rest of the tetromino shapes
+  ];
+  
+  const COLORS = [
+    '#000000',
+    '#FF0000',
+    '#00FF00',
+    '#0000FF',
+    '#FFFF00',
+    '#00FFFF',
+    '#10FF01',
+    '#F000FF'
+  ];
 
 function preload() {
   backgroundImage = loadImage("../IMG/Level1.jpg");
@@ -83,31 +106,6 @@ class GameModel {
     this.fallingPiece = null;
     this.grid = this.makeStartingGrid();
   }
-class Piece {
-    constructor(shape) {
-    this.shape = shape;
-    this.y = 0;
-    this.x = Math.floor(COLS / 2);
-    }
-  
-    renderPiece() {
-      for (let i = 0; i < this.shape.length; i++) {
-        for (let j = 0; j < this.shape[i].length; j++) {
-          if (this.shape[i][j] > 0) {
-            fill(COLORS[this.shape[i][j]]);
-            rect(
-              (this.x + j) * BLOCK_SIZE,
-              (this.y + i) * BLOCK_SIZE,
-              BLOCK_SIZE,
-              BLOCK_SIZE
-            );
-          }
-        }
-      }
-    }
-  }
-  
-
 
   makeStartingGrid() {
     let grid = [];
@@ -147,12 +145,11 @@ class Piece {
         rect(j * BLOCK_SIZE, i * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
       }
     }
-  
+
     if (this.fallingPiece !== null) {
       this.fallingPiece.renderPiece();
     }
   }
-  
 
   moveDown() {
     if (this.fallingPiece === null) {
@@ -221,5 +218,29 @@ class Piece {
       }
     }
     this.renderGameState();
+  }
+}
+
+class Piece {
+  constructor(shape) {
+    this.shape = shape;
+    this.y = 0;
+    this.x = Math.floor(COLS / 2);
+  }
+
+  renderPiece() {
+    for (let i = 0; i < this.shape.length; i++) {
+      for (let j = 0; j < this.shape[i].length; j++) {
+        if (this.shape[i][j] > 0) {
+          fill(COLORS[this.shape[i][j]]);
+          rect(
+            (this.x + j) * BLOCK_SIZE,
+            (this.y + i) * BLOCK_SIZE,
+            BLOCK_SIZE,
+            BLOCK_SIZE
+          );
+        }
+      }
+    }
   }
 }
