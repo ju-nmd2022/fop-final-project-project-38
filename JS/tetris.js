@@ -3,9 +3,9 @@ const COLS = 15;
 const BLOCK_SIZE = 30;
 let backgroundImage;
 let tetromino;
-let tetrominoes = [];
 let frameRateInterval = 30;
 let frameCounter = 0;
+let tetrominoes = [];
 
 
 function preload() {
@@ -25,7 +25,12 @@ function preload() {
 function setup() {
   const canvas = createCanvas(COLS * BLOCK_SIZE, ROWS * BLOCK_SIZE);
   canvas.parent('canvas-container');
-  tetromino = new Tetromino();
+  const tetrominoes = [];
+  for (let i = 0; i < ROWS; i++) {
+    tetrominoes.push(new Array(COLS).fill(0));
+  }
+
+  tetromino = new Tetromino(tetrominoes);
 }
 
 function draw() {

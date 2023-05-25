@@ -1,5 +1,5 @@
 class Tetromino {
-  constructor() {
+  constructor(tetrominoes) {
     this.row = 0; // Initial row position
     this.col = Math.floor(COLS / 2); // Initial column position
     this.color = this.getRandomColor();
