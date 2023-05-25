@@ -46,25 +46,25 @@ class Tetromino {
   rotate() {
     const rotatedShape = [];
     const piece = this.shape;
-  
+
     for (let i = 0; i < piece.length; i++) {
       rotatedShape.push([]);
       for (let j = 0; j < piece[i].length; j++) {
         rotatedShape[i].push(0);
       }
     }
-  
+
     for (let i = 0; i < piece.length; i++) {
       for (let j = 0; j < piece[i].length; j++) {
         rotatedShape[i][j] = piece[j][i];
       }
     }
-  
+
     for (let i = 0; i < rotatedShape.length; i++) {
       rotatedShape[i] = rotatedShape[i].reverse();
     }
-  
-    if (!this.canMove(this.col, this.row, rotatedShape)) {
+
+    if (this.canMove(this.col, this.row, rotatedShape)) {
       this.shape = rotatedShape;
     }
     renderGame();
@@ -84,8 +84,8 @@ class Tetromino {
     return color(random(255), random(255), random(255)); // Generate a random color
   }
 
-  canMove(x, y, rotatedPiece) {
-    const piece = rotatedPiece || this.shape;
+  canMove(x, y, rotatedShape) {
+    const piece = rotatedShape || this.shape;
     for (let i = 0; i < piece.length; i++) {
       for (let j = 0; j < piece[i].length; j++) {
         if (piece[i][j] === 1) {
