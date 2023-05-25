@@ -107,3 +107,16 @@ function checkGrid() {
     scoreboard.innerHTML = "Score: " + score;
   }
 startGame();
+
+document.addEventListener("keydown",function(e){
+    let key = e.key;
+    if(key == "ArrowDown"){
+        moveDown();
+    }else if(key == "ArrowLeft"){
+        moveLeft();
+    }else if(key == "ArrowRight"){
+        moveRight();
+    }else if(key == "ArrowUp"){
+        rotate();
+    }
+})
