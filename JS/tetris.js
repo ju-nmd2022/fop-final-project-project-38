@@ -104,24 +104,27 @@ class GameModel {
     }
 
     for (let i = 0; i < this.grid.length; i++) {
-      for (let j = 0; j < this.grid[i].length; j++) {
-        const cell = this.grid[i][j];
-        if (cell !== 0) {
-          fill(COLORS[cell]);
-          rect(j * BLOCK_SIZE, i * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
+        for (let j = 0; j < this.grid[i].length; j++) {
+          const cell = this.grid[i][j];
+          if (cell !== 0) {
+            const colorIndex = cell - 1; 
+            fill(COLORS[colorIndex]);
+            rect(j * BLOCK_SIZE, i * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
+          }
         }
       }
-    }
-
-    const { x, y, shape } = this.fallingPiece;
-    for (let i = 0; i < shape.length; i++) {
-      for (let j = 0; j < shape[i].length; j++) {
-        if (shape[i][j] > 0) {
-          fill(COLORS[shape[i][j]]);
-          rect((x + j) * BLOCK_SIZE, (y + i) * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
+      
+      const { x, y, shape } = this.fallingPiece;
+      for (let i = 0; i < shape.length; i++) {
+        for (let j = 0; j < shape[i].length; j++) {
+          if (shape[i][j] > 0) {
+            const colorIndex = shape[i][j] - 1; 
+            fill(COLORS[colorIndex]); 
+            rect((x + j) * BLOCK_SIZE, (y + i) * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
+          }
         }
       }
-    }
+      
 
     // Update the scoreboard
     scoreboard.innerText = `Score: ${score} | Level: ${level}`;
