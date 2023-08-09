@@ -9,6 +9,7 @@ const ROWS = 28;
 const FRAME_RATE = 10;
 let backgroundImage;
 let tetrominoImage;
+let platformImage;
 let platform;
 const PLATFORM_WIDTH = 4;
 const PLATFORM_HEIGHT = 1;
@@ -16,13 +17,15 @@ const PLATFORM_SPEED = 2;
 let platformDirection = 1;
 let platformSpawnTimer = 0;
 const PLATFORM_SPAWN_INTERVAL = 10000;
+let lastPlacedRow = -1;
 
 function preload() {
-    backgroundImage = loadImage("./Level1.jpg");
-    tetrominoImage = loadImage("./Asset 9.png");
-    music = document.getElementById('music');
-    music.play();
-  }
+  backgroundImage = loadImage("./Level1.jpg");
+  tetrominoImage = loadImage("./Asset 9.png");
+  platformImage = loadImage("./Asset 7.png");
+  music = document.getElementById('music');
+  music.play();
+}
 
 function setup() {
   createCanvas(COLS * GRID_SIZE, ROWS * GRID_SIZE);
@@ -31,6 +34,11 @@ function setup() {
   frameRate(FRAME_RATE);
   backgroundImage.resize(COLS * GRID_SIZE, ROWS * GRID_SIZE); 
   music.play();
+  platform = {
+    x: random(0, COLS - PLATFORM_WIDTH),
+    y: -PLATFORM_HEIGHT,
+  };
+  platformSpawnTimer = PLATFORM_SPAWN_INTERVAL;
 }
 
 function draw() {
@@ -44,23 +52,27 @@ function draw() {
     gameOver();
   }
 }
+
 function drawBackgroundImage() {
-    image(backgroundImage, 0, 0);
+  image(backgroundImage, 0, 0);
 }
+
 function drawScore() {
-    const x = width - 10;
-    const y = 10;
-    textAlign(RIGHT, TOP);
-    fill(255);
-    textSize(24);
-    text("Score: " + score, x, y);
-  }
-  function gameOver() {
-    fill(0);
-    textAlign(CENTER, CENTER);
-    textSize(48);
-    text("Game Over", width / 2, height / 2);
-  }
+  const x = width - 10;
+  const y = 10;
+  textAlign(RIGHT, TOP);
+  fill(255);
+  textSize(24);
+  text("Score: " + score, x, y);
+}
+
+function gameOver() {
+  fill(0);
+  textAlign(CENTER, CENTER);
+  textSize(48);
+  text("Game Over", width / 2, height / 2);
+}
+
 function keyPressed() {
   if (keyCode === LEFT_ARROW) {
     movePiece(-1, 0);
@@ -74,22 +86,43 @@ function keyPressed() {
 }
 
 function updateGame() {
-    if (frameCount % (60 / FRAME_RATE) === 0) {
-      if (!gameOverFlag) {
-        if (canMove(0, 1)) {
-          movePiece(0, 1);
-        } else {
-          placePiece();
-          checkRows();
-          currentPiece = createPiece();
-  
-          if (!canMove(0, 0)) {
-            gameOverFlag = true;
-          }
+  if (frameCount % (60 / FRAME_RATE) === 0) {
+    if (!gameOverFlag) {
+      if (canMove(0, 1)) {
+        movePiece(0, 1);
+      } else {
+        placePiece();
+        checkRows();
+        currentPiece = createPiece();
+
+        if (!canMove(0, 0)) {
+          gameOverFlag = true;
         }
       }
     }
+
+    if (lastPlacedRow >= 0 && lastPlacedRow >= ROWS - 1) {
+      if (platformSpawnTimer >= PLATFORM_SPAWN_INTERVAL) {
+        platformSpawnTimer = 0;
+        platform.x = random(0, COLS - PLATFORM_WIDTH);
+        platform.y = lastPlacedRow - 3; // Spawn above the last placed piece
+      }
+    }
+
+    if (platform.y >= 0) {
+      platform.x += platformDirection * PLATFORM_SPEED;
+      if (platform.x < 0) {
+        platform.x = COLS - 1;
+      } else if (platform.x >= COLS) {
+        platform.x = 0;
+      }
+    }
+
+    platformSpawnTimer += 1000 / FRAME_RATE;
   }
+}
+
+
 
 function createGrid() {
   const grid = [];
@@ -145,27 +178,38 @@ function createPiece() {
 }
 
 function drawGrid() {
-    for (let row = 0; row < ROWS; row++) {
-      for (let col = 0; col < COLS; col++) {
-        if (!grid[row][col]) {
-          continue;
-        }
-        if (typeof grid[row][col] === 'object') {
-          image(
-            grid[row][col],
-            col * GRID_SIZE,
-            row * GRID_SIZE,
-            GRID_SIZE,
-            GRID_SIZE
-          );
-        } else {
-          fill(0);
-          stroke(255);
-          rect(col * GRID_SIZE, row * GRID_SIZE, GRID_SIZE, GRID_SIZE);
-        }
+  for (let row = 0; row < ROWS; row++) {
+    for (let col = 0; col < COLS; col++) {
+      if (!grid[row][col]) {
+        continue;
+      }
+      if (typeof grid[row][col] === 'object') {
+        image(
+          grid[row][col],
+          col * GRID_SIZE,
+          row * GRID_SIZE,
+          GRID_SIZE,
+          GRID_SIZE
+        );
+      } else {
+        fill(0);
+        stroke(255);
+        rect(col * GRID_SIZE, row * GRID_SIZE, GRID_SIZE, GRID_SIZE);
       }
     }
   }
+  
+  if (platform.y >= 0) {
+    image(
+      platformImage,
+      platform.x * GRID_SIZE,
+      platform.y * GRID_SIZE,
+      PLATFORM_WIDTH * GRID_SIZE,
+      PLATFORM_HEIGHT * GRID_SIZE
+    );
+  }
+}
+
   
 
 function drawPiece(piece) {
@@ -185,25 +229,28 @@ function drawPiece(piece) {
   }
   
 
-function canMove(moveX, moveY) {
-  for (let row = 0; row < currentPiece.piece.length; row++) {
-    for (let col = 0; col < currentPiece.piece[row].length; col++) {
-      if (currentPiece.piece[row][col]) {
-        const newX = currentPiece.col + col + moveX;
-        const newY = currentPiece.row + row + moveY;
-        if (
-          newX < 0 ||
-          newX >= COLS ||
-          newY >= ROWS ||
-          grid[newY][newX]
-        ) {
-          return false;
+  function canMove(moveX, moveY) {
+    for (let row = 0; row < currentPiece.piece.length; row++) {
+      for (let col = 0; col < currentPiece.piece[row].length; col++) {
+        if (currentPiece.piece[row][col]) {
+          const newX = currentPiece.col + col + moveX;
+          const newY = currentPiece.row + row + moveY;
+          if (
+            newX < 0 ||
+            newX >= COLS ||
+            newY >= ROWS ||
+            grid[newY][newX] ||
+            (newY >= platform.y && newY <= platform.y + PLATFORM_HEIGHT - 1 && newX >= platform.x && newX < platform.x + PLATFORM_WIDTH)
+          ) {
+            return false;
+          }
         }
       }
     }
+    return true;
   }
-  return true;
-}
+  
+  
 
 function movePiece(moveX, moveY) {
   if (canMove(moveX, moveY)) {
@@ -249,7 +296,12 @@ function placePiece() {
     for (let row = 0; row < currentPiece.piece.length; row++) {
       for (let col = 0; col < currentPiece.piece[row].length; col++) {
         if (currentPiece.piece[row][col]) {
-          grid[currentPiece.row + row][currentPiece.col + col] = tetrominoImage;
+          const gridRow = currentPiece.row + row;
+        const gridCol = currentPiece.col + col;
+
+        grid[gridRow][gridCol] = tetrominoImage;
+
+        lastPlacedRow = max(lastPlacedRow, gridRow);
         }
       }
     }
