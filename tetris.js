@@ -9,6 +9,13 @@ const ROWS = 28;
 const FRAME_RATE = 10;
 let backgroundImage;
 let tetrominoImage;
+let platform;
+const PLATFORM_WIDTH = 4;
+const PLATFORM_HEIGHT = 1;
+const PLATFORM_SPEED = 2;
+let platformDirection = 1;
+let platformSpawnTimer = 0;
+const PLATFORM_SPAWN_INTERVAL = 10000;
 
 function preload() {
     backgroundImage = loadImage("./Level1.jpg");
