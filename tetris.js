@@ -105,7 +105,7 @@ function updateGame() {
       if (platformSpawnTimer >= PLATFORM_SPAWN_INTERVAL) {
         platformSpawnTimer = 0;
         platform.x = random(0, COLS - PLATFORM_WIDTH);
-        platform.y = lastPlacedRow - 3;
+        platform.y = lastPlacedRow - 5;
       }
     }
 
