@@ -22,7 +22,7 @@ let lastPlacedRow = -1;
 function preload() {
   backgroundImage = loadImage("./Level1.jpg");
   tetrominoImage = loadImage("./Asset 9.png");
-  platformImage = loadImage("./Asset 7.png");
+  platformImage = loadImage("./Asset 10.png");
   music = document.getElementById('music');
   music.play();
 }
